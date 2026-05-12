@@ -7,7 +7,8 @@ import {
   Smartphone, 
   Receipt,
   Download,
-  Calendar
+  Calendar,
+  Printer
 } from 'lucide-react';
 import { Sale } from '../types';
 
@@ -41,6 +42,13 @@ export const CashClosingModule: React.FC<CashClosingModuleProps> = ({ sales, bra
             <Calendar size={14} className="text-zinc-500" />
             <span className="text-xs font-bold text-zinc-300 uppercase">{new Date().toLocaleDateString('es-MX', { day: '2-digit', month: 'long', year: 'numeric' })}</span>
           </div>
+          <button 
+            onClick={() => window.print()}
+            className="flex items-center gap-2 px-4 py-2 bg-zinc-800 border border-zinc-700 text-zinc-300 font-black text-xs uppercase rounded transition-all hover:bg-zinc-700 cursor-pointer"
+          >
+            <Printer size={14} strokeWidth={3} />
+            Imprimir Reporte
+          </button>
           <button className="flex items-center gap-2 px-4 py-2 bg-emerald-500 text-black font-black text-xs uppercase rounded transition-all hover:bg-emerald-400">
             <Download size={14} />
             Exportar PDF

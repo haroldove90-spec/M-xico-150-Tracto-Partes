@@ -104,7 +104,12 @@ export const CartaPorteModule: React.FC<CartaPorteModuleProps> = ({ activeTransf
                   </div>
                 </div>
                 <div className="flex gap-2">
-                  <button className="p-2 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 rounded"><Printer size={16} /></button>
+                  <button 
+                    onClick={() => window.print()}
+                    className="p-2 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 rounded"
+                  >
+                    <Printer size={16} />
+                  </button>
                   <button className="flex items-center gap-2 px-4 py-2 bg-[#fbbf24] text-black font-black text-[11px] rounded uppercase shadow-lg shadow-[#fbbf24]/10">
                     <Download size={14} />
                     Finalizar Carta Porte

@@ -21,6 +21,48 @@
   }
 }
 
+/* Print Styles */
+@media print {
+  aside, 
+  header, 
+  button, 
+  nav,
+  .no-print {
+    display: none !important;
+  }
+
+  main {
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 100% !important;
+    background-color: white !important;
+  }
+
+  .print-only {
+    display: block !important;
+  }
+
+  /* Reset colors for printing */
+  .bg-[#18181b], .bg-surface {
+    background-color: white !important;
+    color: black !important;
+    border: 1px solid #ddd !important;
+  }
+
+  .text-white, .text-slate-100 {
+    color: black !important;
+  }
+
+  .text-zinc-500, .text-zinc-600 {
+    color: #444 !important;
+  }
+  
+  * {
+    color-adjust: exact !important;
+    -webkit-print-color-adjust: exact !important;
+  }
+}
+
 /* Custom Scrollbar for the industrial look */
 ::-webkit-scrollbar {
   width: 6px;

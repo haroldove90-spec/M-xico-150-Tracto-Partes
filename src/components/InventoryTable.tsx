@@ -10,57 +10,103 @@ interface InventoryTableProps {
 export const InventoryTable: React.FC<InventoryTableProps> = ({ inventory, branches }) => {
   const [filterDead, setFilterDead] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
+  const [brandFilter, setBrandFilter] = useState('');
+  const [engineFilter, setEngineFilter] = useState('');
 
   const filteredInventory = inventory.filter(item => {
     const matchesSearch = item.sku.toLowerCase().includes(searchTerm.toLowerCase()) || 
                          item.description.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesBrand = brandFilter === '' || item.compatibility.toLowerCase().includes(brandFilter.toLowerCase()) || item.brand.toLowerCase().includes(brandFilter.toLowerCase());
+    const matchesEngine = engineFilter === '' || (item.engineType && item.engineType.toLowerCase().includes(engineFilter.toLowerCase()));
     
     if (filterDead) {
       const totalStock = (Object.values(item.stock) as number[]).reduce((a, b) => a + b, 0);
-      return matchesSearch && totalStock < 5;
+      return matchesSearch && matchesBrand && matchesEngine && totalStock < 5;
     }
-    return matchesSearch;
+    return matchesSearch && matchesBrand && matchesEngine;
   });
 
   return (
     <div className="bg-[#18181b] border border-[#27272a] rounded-lg overflow-hidden flex flex-col h-full font-sans">
-      <div className="p-4 border-b border-[#27272a] flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div>
-          <h2 className="text-sm font-bold flex items-center gap-2 text-white text-wrap uppercase">
-            Inventario General de Refacciones
-            <span className="text-[9px] bg-[#fbbf24] text-black px-1.5 py-0.5 rounded font-black">LOGÍSTICA</span>
-          </h2>
-          <p className="text-zinc-500 text-[11px]">Consolidado de stock crítico across sucursales</p>
-        </div>
-        
-        <div className="flex items-center gap-2">
-          <button 
-            onClick={() => setFilterDead(!filterDead)}
-            className={`flex items-center gap-2 px-3 py-1.5 rounded text-[10px] font-black transition-all border ${
-              filterDead 
-                ? 'bg-rose-500/20 border-rose-500 text-rose-500' 
-                : 'bg-zinc-800 border-zinc-700 text-zinc-400 hover:text-white'
-            }`}
-          >
-            <Filter size={12} />
-            {filterDead ? 'VISTA: CRÍTICOS / MUERTOS' : 'FILTRAR STOCK MUERTO'}
-          </button>
+      <div className="p-4 border-b border-[#27272a] flex flex-col gap-4">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div>
+            <h2 className="text-sm font-bold flex items-center gap-2 text-white text-wrap uppercase">
+              Inventario General de Refacciones
+              <span className="text-[9px] bg-[#fbbf24] text-black px-1.5 py-0.5 rounded font-black">LOGÍSTICA</span>
+            </h2>
+            <p className="text-zinc-500 text-[11px]">Consolidado de stock crítico across sucursales</p>
+          </div>
+          
+          <div className="flex items-center gap-2">
+            <button 
+              onClick={() => setFilterDead(!filterDead)}
+              className={`flex items-center gap-2 px-3 py-1.5 rounded text-[10px] font-black transition-all border ${
+                filterDead 
+                  ? 'bg-rose-500/20 border-rose-500 text-rose-500' 
+                  : 'bg-zinc-800 border-zinc-700 text-zinc-400 hover:text-white'
+              }`}
+            >
+              <Filter size={12} />
+              {filterDead ? 'VISTA: CRÍTICOS / MUERTOS' : 'FILTRAR STOCK MUERTO'}
+            </button>
 
-          <div className="relative">
-            <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 text-zinc-500" size={14} />
-            <input 
-              type="text" 
-              placeholder="SKU o pieza..." 
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-8 pr-3 py-1.5 bg-[#09090b] border border-[#27272a] rounded text-[12px] text-white focus:outline-none focus:border-[#fbbf24] w-48 transition-all"
-            />
+            <div className="relative">
+              <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 text-zinc-500" size={14} />
+              <input 
+                type="text" 
+                placeholder="SKU o pieza..." 
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="pl-8 pr-3 py-1.5 bg-[#09090b] border border-[#27272a] rounded text-[12px] text-white focus:outline-none focus:border-[#fbbf24] w-48 transition-all"
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* Advanced Filters */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-3 p-3 bg-[#09090b]/50 rounded-lg border border-[#27272a]">
+          <div className="space-y-1">
+            <label className="text-[9px] font-black text-zinc-500 uppercase">Compatibilidad (Marca)</label>
+            <select 
+              value={brandFilter}
+              onChange={(e) => setBrandFilter(e.target.value)}
+              className="w-full bg-[#18181b] border border-[#27272a] rounded px-2 py-1 text-[11px] text-zinc-300 outline-none focus:border-[#fbbf24] transition-colors"
+            >
+              <option value="">Todas las marcas</option>
+              <option value="Kenworth">Kenworth</option>
+              <option value="Freightliner">Freightliner</option>
+              <option value="International">International</option>
+              <option value="Volvo">Volvo</option>
+            </select>
+          </div>
+          <div className="space-y-1">
+            <label className="text-[9px] font-black text-zinc-500 uppercase">Tipo de Motor</label>
+            <select 
+              value={engineFilter}
+              onChange={(e) => setEngineFilter(e.target.value)}
+              className="w-full bg-[#18181b] border border-[#27272a] rounded px-2 py-1 text-[11px] text-zinc-300 outline-none focus:border-[#fbbf24] transition-colors"
+            >
+              <option value="">Cualquier Motor</option>
+              <option value="Cummins">Cummins ISX / M11</option>
+              <option value="Detroit">Detroit Diesel S60</option>
+              <option value="Caterpillar">Caterpillar C15</option>
+              <option value="Navistar">Navistar DT466</option>
+            </select>
+          </div>
+          <div className="flex items-end">
+            <button 
+              onClick={() => {setBrandFilter(''); setEngineFilter(''); setSearchTerm('');}}
+              className="w-full py-1.5 bg-zinc-800 text-zinc-400 rounded text-[10px] font-black uppercase hover:bg-zinc-700 transition-colors border border-zinc-700"
+            >
+              Limpiar Búsqueda
+            </button>
           </div>
         </div>
       </div>
 
-      <div className="overflow-y-auto flex-1">
-        <table className="w-full text-left border-separate border-spacing-0">
+      <div className="overflow-x-auto overflow-y-auto flex-1 custom-scrollbar">
+        <table className="w-full text-left border-separate border-spacing-0 min-w-[800px]">
           <thead className="sticky top-0 z-10">
             <tr className="bg-[#27272a] text-[#a1a1aa] text-[11px] font-semibold uppercase tracking-wider">
               <th className="px-4 py-2 border-b border-[#27272a]">SKU / Marca</th>

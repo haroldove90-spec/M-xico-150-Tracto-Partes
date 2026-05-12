@@ -5,33 +5,44 @@ import {
   Package, 
   Truck, 
   ArrowRightLeft,
+  Users,
+  LayoutDashboard,
   LogOut, 
   Menu,
   ChevronLeft
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { UserRole } from '../types';
 
 interface SidebarProps {
   isOpen: boolean;
   setIsOpen: (open: boolean) => void;
   activeTab: string;
   setActiveTab: (tab: string) => void;
+  userRole: UserRole;
 }
 
-const menuItems = [
-  { id: 'ventas', label: 'Dashboard', icon: BarChart3 },
-  { id: 'facturacion', label: 'Cortes/Caja', icon: Receipt },
-  { id: 'traspasos', label: 'Traspasos', icon: ArrowRightLeft },
-  { id: 'inventarios', label: 'Inventarios', icon: Package },
-  { id: 'carta-porte', label: 'Carta Porte', icon: Truck },
-];
+export const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen, activeTab, setActiveTab, userRole }) => {
+  const menuItems = [
+    { id: 'dashboard', label: 'Monitor Ejecutivo', icon: LayoutDashboard, roles: ['GERENTE'] },
+    { id: 'ventas', label: 'Punto de Venta', icon: BarChart3, roles: ['GERENTE', 'VENTAS'] },
+    { id: 'clientes', label: 'Cuentas x Cobrar', icon: Users, roles: ['GERENTE', 'VENTAS'] },
+    { id: 'facturacion', label: 'Cortes / Caja', icon: Receipt, roles: ['GERENTE', 'VENTAS'] },
+    { id: 'traspasos', label: 'Logística Trasp.', icon: ArrowRightLeft, roles: ['GERENTE', 'ALMACEN'] },
+    { id: 'inventarios', label: 'Inventario Full', icon: Package, roles: ['GERENTE', 'ALMACEN'] },
+    { id: 'carta-porte', label: 'Cartas Porte', icon: Truck, roles: ['GERENTE', 'ALMACEN', 'VENTAS'] },
+  ];
 
-export const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen, activeTab, setActiveTab }) => {
+  const visibleItems = menuItems.filter(item => item.roles.includes(userRole));
+
   return (
     <motion.aside
       initial={false}
-      animate={{ width: isOpen ? 240 : 80 }}
-      className="fixed left-0 top-0 h-screen bg-[#09090b] border-r border-[#27272a] z-50 flex flex-col pt-6 font-sans"
+      animate={{ 
+        width: isOpen ? 240 : 80,
+        x: (typeof window !== 'undefined' && window.innerWidth < 768 && !isOpen) ? -240 : 0
+      }}
+      className={`fixed left-0 top-0 h-screen bg-[#09090b] border-r border-[#27272a] z-50 flex flex-col pt-6 font-sans transition-transform md:translate-x-0 ${!isOpen ? 'max-md:-translate-x-full' : ''}`}
     >
       <div className="px-6 mb-8 flex items-center justify-between">
         <AnimatePresence mode="wait">
@@ -45,7 +56,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen, activeTab, 
               <div className="w-8 h-8 bg-[#fbbf24] flex items-center justify-center rounded text-black font-bold">
                 M
               </div>
-              <span className="text-sm font-bold tracking-tight text-white">MEXICO 150 <span className="text-[#fbbf24]">TRACTO</span></span>
+              <span className="text-sm font-bold tracking-tight text-white uppercase select-none">MÉXICO 150 <span className="text-[#fbbf24]">TRACTO</span></span>
             </motion.div>
           )}
         </AnimatePresence>
@@ -57,18 +68,18 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen, activeTab, 
         </button>
       </div>
 
-      <nav className="flex-1 px-3 space-y-1">
-        {menuItems.map((item) => (
+      <nav className="flex-1 px-3 space-y-1 overflow-y-auto custom-scrollbar">
+        {visibleItems.map((item) => (
           <button
             key={item.id}
             onClick={() => setActiveTab(item.id)}
-            className={`w-full flex items-center gap-3 p-2.5 px-4 rounded-md transition-all text-[13px] font-medium group ${
+            className={`w-full flex items-center gap-3 p-2.5 px-4 rounded-md transition-all text-[13px] font-bold uppercase tracking-tighter group ${
               activeTab === item.id 
-                ? 'bg-[#27272a] text-[#fbbf24]' 
+                ? 'bg-[#27272a] text-[#fbbf24] shadow-sm' 
                 : 'text-zinc-400 hover:bg-[#18181b] hover:text-white'
             }`}
           >
-            <item.icon size={16} className={activeTab === item.id ? 'stroke-[2px]' : ''} />
+            <item.icon size={16} className={activeTab === item.id ? 'stroke-[2.5px]' : 'stroke-[1.5px]'} />
             {isOpen && (
               <span className="whitespace-nowrap transition-opacity duration-200">{item.label}</span>
             )}
@@ -76,15 +87,18 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen, activeTab, 
         ))}
       </nav>
 
-      <div className="p-6 mt-auto border-t border-zinc-800">
+      <div className="p-6 mt-auto border-t border-zinc-800 bg-[#0c0c0e]">
         <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-full bg-zinc-800 border border-zinc-700 flex items-center justify-center text-[10px] font-medium text-white">
-            GA
+          <div className="w-8 h-8 rounded bg-zinc-800 border border-zinc-700 flex items-center justify-center text-[10px] font-black text-white uppercase">
+            {userRole.slice(0, 2)}
           </div>
           {isOpen && (
             <div className="flex flex-col">
-              <div className="text-[11px] font-semibold text-zinc-200">Gerente Admin</div>
-              <div className="text-[10px] text-zinc-500">ID: #MX150</div>
+              <div className="text-[11px] font-black text-zinc-200 uppercase tracking-tighter">{userRole}</div>
+              <div className="text-[9px] text-[#4ade80] font-bold uppercase tracking-widest flex items-center gap-1">
+                <span className="w-1 h-1 bg-[#4ade80] rounded-full animate-pulse"></span>
+                Online
+              </div>
             </div>
           )}
         </div>

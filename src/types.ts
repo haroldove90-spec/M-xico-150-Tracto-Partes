@@ -8,9 +8,25 @@ export interface InventoryItem {
   description: string;
   brand: string;
   compatibility: string;
+  engineType?: string;
   stock: Record<string, number>; // branchId -> stock
   price: number;
   status: PartStatus;
+  salesCount: number; // For Top 5 BI
+}
+
+export interface ClientAccount {
+  id: string;
+  name: string;
+  rfc: string;
+  creditLimit: number;
+  balance: number;
+  history: Array<{
+    id: string;
+    date: string;
+    amount: number;
+    type: 'VENTA' | 'PAGO';
+  }>;
 }
 
 export interface Sale {
