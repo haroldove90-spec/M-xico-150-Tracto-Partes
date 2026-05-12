@@ -72,7 +72,12 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen, activeTab, 
         {visibleItems.map((item) => (
           <button
             key={item.id}
-            onClick={() => setActiveTab(item.id)}
+            onClick={() => {
+              setActiveTab(item.id);
+              if (window.innerWidth < 768) {
+                setIsOpen(false);
+              }
+            }}
             className={`w-full flex items-center gap-3 p-2.5 px-4 rounded-md transition-all text-[13px] font-bold uppercase tracking-tighter group ${
               activeTab === item.id 
                 ? 'bg-[#27272a] text-[#fbbf24] shadow-sm' 
