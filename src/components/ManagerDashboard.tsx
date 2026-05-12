@@ -2,6 +2,16 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { TrendingUp, Users, AlertCircle, ShoppingCart, ArrowUpRight, ArrowDownRight } from 'lucide-react';
 import { Sale, InventoryItem, Branch } from '../types';
+import { 
+  BarChart, 
+  Bar, 
+  XAxis, 
+  YAxis, 
+  CartesianGrid, 
+  Tooltip, 
+  ResponsiveContainer, 
+  Cell
+} from 'recharts';
 
 interface ManagerDashboardProps {
   sales: Sale[];
@@ -9,28 +19,40 @@ interface ManagerDashboardProps {
   branches: Branch[];
 }
 
-export const ManagerDashboard: React.FC<ManagerDashboardProps> = ({ sales, inventory, branches }) => {
+const CustomTooltip = ({ active, payload }: any) => {
+  if (active && payload && payload.length) {
+    return (
+      <div className="bg-[#09090b] border border-[#27272a] p-2 rounded shadow-xl">
+        <p className="text-[10px] font-black text-white uppercase tracking-tighter mb-1">{payload[0].payload.day}</p>
+        <p className="text-[12px] font-bold text-[#fbbf24]">
+          ${payload[0].value.toLocaleString()}
+        </p>
+      </div>
+    );
+  }
+  return null;
+};
+
+export const ManagerDashboard: React.FC<ManagerDashboardProps> = ({ sales, inventory }) => {
   // Logic for BI metrics
   const totalRevenue = sales.reduce((acc, s) => acc + s.total, 0);
   const topSellingParts = [...inventory].sort((a, b) => b.salesCount - a.salesCount).slice(0, 5);
   
-  // Simulated Weekly Data for chart
+  // Weekly Data for chart
   const weeklySalesData = [
-    { day: 'Lun', amount: 45000, color: '#fbbf24' },
-    { day: 'Mar', amount: 32000, color: '#fbbf24' },
-    { day: 'Mie', amount: 68000, color: '#fbbf24' },
-    { day: 'Jue', amount: 55000, color: '#fbbf24' },
-    { day: 'Vie', amount: 92000, color: '#fbbf24' },
-    { day: 'Sab', amount: 41000, color: '#fbbf24' },
-    { day: 'Dom', amount: 0, color: '#fbbf24' },
+    { day: 'Lunes', amount: 45000 },
+    { day: 'Martes', amount: 32000 },
+    { day: 'Miércoles', amount: 68000 },
+    { day: 'Jueves', amount: 55000 },
+    { day: 'Viernes', amount: 92000 },
+    { day: 'Sábado', amount: 41000 },
+    { day: 'Domingo', amount: 15000 },
   ];
-
-  const maxAmount = Math.max(...weeklySalesData.map(d => d.amount));
 
   return (
     <div className="space-y-6 font-sans">
       {/* KPI Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         {[
           { label: 'Ventas Totales', value: `$${totalRevenue.toLocaleString()}`, icon: TrendingUp, color: 'text-emerald-500', trend: '+12.5%' },
           { label: 'Top Vendedor', value: 'Sucursal 150', icon: ShoppingCart, color: 'text-blue-500', trend: '+8%' },
@@ -82,23 +104,39 @@ export const ManagerDashboard: React.FC<ManagerDashboardProps> = ({ sales, inven
             </div>
           </div>
           
-          <div className="h-48 flex items-end justify-between gap-2 px-2">
-            {weeklySalesData.map((data, idx) => (
-              <div key={idx} className="flex-1 flex flex-col items-center gap-2 group">
-                <div className="relative w-full flex items-end justify-center h-full">
-                  <motion.div 
-                    initial={{ height: 0 }}
-                    animate={{ height: `${(data.amount / maxAmount) * 100}%` }}
-                    className="w-full max-w-[40px] bg-[#fbbf24] rounded-t-sm group-hover:bg-white transition-colors relative"
-                  >
-                    <div className="absolute -top-6 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity bg-white text-black text-[9px] font-black px-1.5 py-0.5 rounded whitespace-nowrap shadow-xl">
-                      ${(data.amount/1000).toFixed(1)}k
-                    </div>
-                  </motion.div>
-                </div>
-                <span className="text-[9px] font-black text-zinc-600 uppercase tracking-tighter">{data.day}</span>
-              </div>
-            ))}
+          <div className="h-64 w-full">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={weeklySalesData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#27272a" />
+                <XAxis 
+                  dataKey="day" 
+                  axisLine={false} 
+                  tickLine={false} 
+                  tick={{ fill: '#71717a', fontSize: 10, fontWeight: 800 }} 
+                  dy={10}
+                />
+                <YAxis 
+                  axisLine={false} 
+                  tickLine={false} 
+                  tick={{ fill: '#71717a', fontSize: 10, fontWeight: 800 }}
+                />
+                <Tooltip content={<CustomTooltip />} cursor={{ fill: 'rgba(255,255,255,0.05)' }} />
+                <Bar 
+                  dataKey="amount" 
+                  radius={[4, 4, 0, 0]} 
+                  barSize={40}
+                  animationBegin={300}
+                >
+                  {weeklySalesData.map((entry, index) => (
+                    <Cell 
+                      key={`cell-${index}`} 
+                      fill={index === 4 ? '#fbbf24' : '#3f3f46'} 
+                      className="hover:fill-[#fbbf24] transition-colors duration-300"
+                    />
+                  ))}
+                </Bar>
+              </BarChart>
+            </ResponsiveContainer>
           </div>
         </div>
 
@@ -111,12 +149,12 @@ export const ManagerDashboard: React.FC<ManagerDashboardProps> = ({ sales, inven
                 <div className="flex items-center gap-3">
                   <span className="text-[10px] font-black text-zinc-700 w-4">0{idx + 1}</span>
                   <div>
-                    <p className="text-[11px] font-bold text-white truncate w-32">{item.description}</p>
+                    <p className="text-[11px] font-bold text-white truncate w-32 md:w-auto overflow-hidden">{item.description}</p>
                     <p className="text-[9px] text-[#fbbf24] font-black uppercase">{item.brand}</p>
                   </div>
                 </div>
-                <div className="text-right">
-                  <p className="text-[11px] font-black text-white">{item.salesCount} <span className="text-zinc-600">uds</span></p>
+                <div className="text-right ml-2">
+                  <p className="text-[11px] font-black text-white whitespace-nowrap">{item.salesCount} <span className="text-zinc-600">uds</span></p>
                   <p className="text-[8px] text-zinc-500 font-bold uppercase">Trimestre</p>
                 </div>
               </div>
@@ -130,3 +168,4 @@ export const ManagerDashboard: React.FC<ManagerDashboardProps> = ({ sales, inven
     </div>
   );
 };
+
