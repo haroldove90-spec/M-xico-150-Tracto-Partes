@@ -26,6 +26,28 @@ const MOCK_CLIENTS: ClientAccount[] = [
       { id: 'h4', date: '2026-05-11', amount: 85000, type: 'VENTA' },
       { id: 'h5', date: '2026-04-20', amount: 35000, type: 'VENTA' },
     ]
+  },
+  {
+    id: 'c3',
+    name: 'Servicios Logísticos del Norte',
+    rfc: 'SLN950315T12',
+    creditLimit: 250000,
+    balance: 18000,
+    history: [
+      { id: 'h6', date: '2026-05-12', amount: 18000, type: 'VENTA' },
+      { id: 'h7', date: '2026-05-01', amount: 15000, type: 'PAGO' },
+    ]
+  },
+  {
+    id: 'c4',
+    name: 'Kenworth de Monterrey S.A.',
+    rfc: 'KMO770814M01',
+    creditLimit: 1000000,
+    balance: 0,
+    history: [
+      { id: 'h8', date: '2026-04-25', amount: 200000, type: 'VENTA' },
+      { id: 'h9', date: '2026-04-30', amount: 200000, type: 'PAGO' },
+    ]
   }
 ];
 

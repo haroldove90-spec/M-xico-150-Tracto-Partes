@@ -50,11 +50,15 @@ const INITIAL_SALES: Sale[] = [
   { id: 's3', date: '11/05/2026', branchId: 'matriz-cdmx', total: 15400, paymentMethod: 'Tarjeta', items: [{ itemId: '3', quantity: 1, price: 15400 }] },
   { id: 's4', date: '12/05/2026', branchId: 'matriz-cdmx', total: 2100, paymentMethod: 'Efectivo', items: [{ itemId: '9', quantity: 1, price: 2100 }] },
   { id: 's5', date: '12/05/2026', branchId: 'norte-mty', total: 1080, paymentMethod: 'Transferencia', items: [{ itemId: '6', quantity: 2, price: 540 }] },
+  { id: 's6', date: '12/05/2026', branchId: 'sucursal-150', total: 22400, paymentMethod: 'Efectivo', items: [{ itemId: '7', quantity: 2, price: 11200 }] },
+  { id: 's7', date: '10/05/2026', branchId: 'sur-qro', total: 540, paymentMethod: 'Tarjeta', items: [{ itemId: '6', quantity: 1, price: 540 }] },
 ];
 
 const INITIAL_TRANSFERS: Transfer[] = [
   { id: 't1', itemId: '6', quantity: 50, originBranchId: 'matriz-cdmx', destinationBranchId: 'sucursal-150', status: 'En Tránsito', date: '12/05/2026' },
   { id: 't2', itemId: '4', quantity: 20, originBranchId: 'matriz-cdmx', destinationBranchId: 'norte-mty', status: 'Entregado', date: '10/05/2026' },
+  { id: 't3', itemId: '2', quantity: 5, originBranchId: 'sucursal-150', destinationBranchId: 'sur-qro', status: 'En Tránsito', date: '12/05/2026' },
+  { id: 't4', itemId: '10', quantity: 2, originBranchId: 'matriz-cdmx', destinationBranchId: 'sucursal-150', status: 'En Tránsito', date: '11/05/2026' },
 ];
 
 export default function App() {
